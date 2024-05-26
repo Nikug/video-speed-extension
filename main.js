@@ -10,7 +10,7 @@ const showCurrentRate = () => {
   }
 
   const element = document.createElement("div");
-  element.innerHTML = `${videoElement.playbackRate.toFixed(2)}x`;
+  element.textContent = `${videoElement.playbackRate.toFixed(2)}x`;
   element.style.padding = "0.5rem";
   element.style.position = "absolute";
   element.style.top = "4rem";
