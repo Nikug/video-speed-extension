@@ -16,5 +16,10 @@
         "main.js"
       ]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "video-speed-ALXT7hTQIFzPOuxr6lzUlfZF/WY="
+    }
+  }
 }
