@@ -45,8 +45,9 @@ const handleWheel = (event) => {
   if (event.target.localName === "video") {
     videoElement = event.target;
   } else {
-    videoElement = event.target.querySelector("video");
-    console.log(videoElement);
+    videoElement = document
+      .elementsFromPoint(event.clientX, event.clientY)
+      .find((element) => element.localName === "video");
   }
 
   if (videoElement) {

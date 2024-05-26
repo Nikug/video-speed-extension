@@ -1,10 +1,11 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Video speed",
-  "version": "1.0",
+  "version": "1.0.0",
   "description": "Adds a red border to all webpages matching mozilla.org.",
   "icons": {
-    "48": "icon.svg"
+    "48": "icon.svg",
+    "96": "icon.svg"
   },
   "content_scripts": [
     {
