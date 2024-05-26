@@ -3,7 +3,7 @@ let videoElement = null;
 let rateElement = null;
 let timeout = null;
 
-const showCurrentSpeed = () => {
+const showCurrentRate = () => {
   if (!videoElement) return;
   if (rateElement) {
     removeRateElement();
@@ -11,9 +11,9 @@ const showCurrentSpeed = () => {
 
   const element = document.createElement("div");
   element.innerHTML = `${videoElement.playbackRate.toFixed(2)}x`;
-  element.style.padding = "1rem";
+  element.style.padding = "0.5rem";
   element.style.position = "absolute";
-  element.style.top = "1rem";
+  element.style.top = "4rem";
   element.style.left = 0;
   element.style.right = 0;
   element.style.margin = "auto";
@@ -56,7 +56,7 @@ const handleWheel = (event) => {
     const newSpeed =
       videoElement.playbackRate - Math.sign(event.deltaY) * speedchange;
     videoElement.playbackRate = quantize(newSpeed);
-    showCurrentSpeed();
+    showCurrentRate();
   }
 };
 
