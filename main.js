@@ -52,7 +52,6 @@ const handleWheel = (event) => {
 
   if (videoElement) {
     event.preventDefault();
-    event.stopPropagation();
     const newSpeed =
       videoElement.playbackRate - Math.sign(event.deltaY) * speedchange;
     videoElement.playbackRate = quantize(newSpeed);
