@@ -1,7 +1,7 @@
 const rateElement = document.getElementById("rate");
 
 const setup = async () => {
-  const rate = await browser.storage.local.get("rate");
+  const rate = await browser.storage.sync.get("rate");
   rateElement.value = rate?.rate ?? 0.1;
 };
 
@@ -15,7 +15,7 @@ const handleChange = async (event) => {
     return;
   }
 
-  await browser.storage.local.set({ rate: number });
+  await browser.storage.sync.set({ rate: number });
   rateElement.classList.remove("invalid");
 };
 

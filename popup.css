@@ -8,12 +8,13 @@ body {
   text-align: center;
   padding: 0.5rem;
   padding-bottom: 1rem;
+  overflow: hidden;
 }
 
 .header {
   font-size: 1rem;
   font-weight: bold;
-  margin-bottom: 2rem;
+  padding-bottom: 1rem;
 }
 
 .controls-container {

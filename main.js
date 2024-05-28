@@ -1,4 +1,4 @@
-const speedchange = 0.1;
+let rateStep = 0.1;
 let videoElement = null;
 let rateElement = null;
 let timeout = null;
@@ -37,9 +37,9 @@ const removeRateElement = () => {
   }
 };
 
-const quantize = (num) => Math.round(num / speedchange) * speedchange;
+const quantize = (value, amount) => Math.round(value / amount) * amount;
 
-const handleWheel = (event) => {
+const handleWheel = async (event) => {
   if (!event.ctrlKey) return;
 
   if (event.target.localName === "video") {
@@ -53,10 +53,16 @@ const handleWheel = (event) => {
   if (videoElement) {
     event.preventDefault();
     const newSpeed =
-      videoElement.playbackRate - Math.sign(event.deltaY) * speedchange;
-    videoElement.playbackRate = quantize(newSpeed);
+      videoElement.playbackRate - Math.sign(event.deltaY) * rateStep;
+    videoElement.playbackRate = quantize(newSpeed, rateStep);
     showCurrentRate();
   }
 };
 
 document.addEventListener("wheel", handleWheel, { passive: false });
+
+browser.storage.onChanged.addListener((changes) => {
+  if (changes.rate) {
+    rateStep = changes.rate.newValue;
+  }
+});
