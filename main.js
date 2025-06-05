@@ -59,7 +59,10 @@ const handleWheel = async (event) => {
   }
 };
 
-document.addEventListener("wheel", handleWheel, { passive: false });
+document.addEventListener("wheel", handleWheel, {
+  passive: false,
+  capture: true,
+});
 
 browser.storage.onChanged.addListener((changes) => {
   if (changes.rate) {

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Video Speed by ctrl + scrolling",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Allows you to change the playback speed by ctrl + scrolling on top of videos.",
   "icons": {
     "48": "icon.svg",
@@ -9,11 +9,17 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["main.js"]
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "main.js"
+      ]
     }
   ],
-  "permissions": ["storage"],
+  "permissions": [
+    "storage"
+  ],
   "action": {
     "default_icon": "icon.svg",
     "default_title": "Video Speed by ctrl + scrolling",
