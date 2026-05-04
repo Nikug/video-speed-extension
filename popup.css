@@ -21,7 +21,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: start;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .input {
@@ -41,4 +41,16 @@ body {
 .invalid {
   border: 1px solid #b91c1c !important;
   background-color: #7f1d1d66;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }

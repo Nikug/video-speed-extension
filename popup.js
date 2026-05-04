@@ -1,11 +1,15 @@
 const rateElement = document.getElementById("rate");
+const modeElement = document.getElementById("mode");
 
 const setup = async () => {
-  const rate = await browser.storage.sync.get("rate");
+  const rate = await browser.storage.local.get("rate");
   rateElement.value = rate?.rate ?? 0.1;
+
+  const laptopMode = await browser.storage.local.get("laptopMode");
+  modeElement.checked = laptopMode?.laptopMode ?? false;
 };
 
-const handleChange = async (event) => {
+const handleRateChange = async (event) => {
   if (!rateElement) return;
 
   const number = Number(event.target.value);
@@ -15,9 +19,17 @@ const handleChange = async (event) => {
     return;
   }
 
-  await browser.storage.sync.set({ rate: number });
+  await browser.storage.local.set({ rate: number });
   rateElement.classList.remove("invalid");
 };
 
-rateElement.addEventListener("input", handleChange);
+const handleModeChange = async (event) => {
+  if (!modeElement) return;
+
+  const enabled = event.target.checked;
+  await browser.storage.local.set({ laptopMode: enabled });
+};
+
+rateElement.addEventListener("input", handleRateChange);
+modeElement.addEventListener("change", handleModeChange);
 setup();
