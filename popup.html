@@ -18,6 +18,16 @@
       <div class="checkbox-container">
         <input id="mode" type="checkbox" />
         <label for="mode">Laptop mode</label>
+        <button id="laptop-mode-info-button" class="text-button" popovertarget="laptop-mode-info-dialog">
+          Info
+        </button>
+        <dialog id="laptop-mode-info-dialog" class="dialog" popover>
+          <p class="small-text">Laptop trackpads send the scroll event at a very high rate, which can make selecting the
+            correct video speed difficult. This option should help with that.</p>
+          <button class="text-button" popovertarget="laptop-mode-info-dialog" popovertargetaction="hide">
+            Close
+          </button>
+        </dialog>
       </div>
     </div>
   </div>
