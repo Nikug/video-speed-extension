@@ -1,7 +1,23 @@
 let rateStep = 0.1;
+let laptopMode = false;
 let videoElement = null;
 let rateElement = null;
 let timeout = null;
+const hideRateElementDelay = 500;
+
+let originalPlaybackRate = 1;
+let scrolledDistance = 0;
+let clearDistanceTimeout = null;
+const clearDistanceDelay = 500;
+const distanceThreshold = 15;
+
+const setup = async () => {
+  const storedRate = await browser.storage.local.get("rate");
+  rateStep = storedRate?.rate ?? 0.1;
+
+  const storedLaptopMode = await browser.storage.local.get("laptopMode");
+  laptopMode = storedLaptopMode?.laptopMode ?? false;
+};
 
 const showCurrentRate = () => {
   if (!videoElement) return;
@@ -27,7 +43,7 @@ const showCurrentRate = () => {
   if (timeout) {
     clearTimeout(timeout);
   }
-  timeout = setTimeout(() => removeRateElement(), 500);
+  timeout = setTimeout(() => removeRateElement(), hideRateElementDelay);
 };
 
 const removeRateElement = () => {
@@ -37,7 +53,10 @@ const removeRateElement = () => {
   }
 };
 
-const quantize = (value, amount) => Math.round(value / amount) * amount;
+const quantize = (value, amount) => {
+  if (amount === 0) return value;
+  return Math.round(value / amount) * amount;
+};
 
 const handleWheel = async (event) => {
   if (!event.ctrlKey) return;
@@ -52,9 +71,29 @@ const handleWheel = async (event) => {
 
   if (videoElement) {
     event.preventDefault();
-    const newSpeed =
-      videoElement.playbackRate - Math.sign(event.deltaY) * rateStep;
-    videoElement.playbackRate = quantize(newSpeed, rateStep);
+
+    if (laptopMode) {
+      scrolledDistance += event.deltaY;
+
+      if (clearDistanceTimeout) clearTimeout(clearDistanceTimeout);
+      clearDistanceTimeout = setTimeout(() => {
+        scrolledDistance = 0;
+        clearDistanceTimeout = null;
+        originalPlaybackRate = videoElement.playbackRate;
+      }, clearDistanceDelay);
+
+      const steps = Math.round(scrolledDistance / distanceThreshold);
+      const newRate = quantize(
+        originalPlaybackRate - steps * rateStep,
+        rateStep,
+      );
+      videoElement.playbackRate = newRate >= 0 ? newRate : 0;
+    } else {
+      const newSpeed =
+        videoElement.playbackRate - Math.sign(event.deltaY) * rateStep;
+      const newRate = quantize(newSpeed, rateStep);
+      videoElement.playbackRate = newRate >= 0 ? newRate : 0;
+    }
     showCurrentRate();
   }
 };
@@ -65,7 +104,12 @@ document.addEventListener("wheel", handleWheel, {
 });
 
 browser.storage.onChanged.addListener((changes) => {
-  if (changes.rate) {
+  if (changes.rate != null) {
     rateStep = changes.rate.newValue;
   }
+  if (changes.laptopMode != null) {
+    laptopMode = changes.laptopMode.newValue;
+  }
 });
+
+setup();
