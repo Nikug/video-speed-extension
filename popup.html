@@ -15,6 +15,7 @@
         <label for="rate">Playback speed step</label>
         <input id="rate" class="input" type="text" />
       </div>
+      <hr class="divider" />
       <div class="checkbox-container">
         <input id="mode" type="checkbox" />
         <label for="mode">Laptop mode</label>
@@ -22,12 +23,17 @@
           Info
         </button>
         <dialog id="laptop-mode-info-dialog" class="dialog" popover>
-          <p class="small-text">Laptop trackpads send the scroll event at a very high rate, which can make selecting the
-            correct video speed difficult. This option should help with that.</p>
+          <p class="small-text">Laptop trackpads send scroll events at a very high rate, which can make selecting video
+            playback rate difficult. This option helps with that. Using higher threshold values means more
+            scrolling before registering a video playback rate change.</p>
           <button class="text-button" popovertarget="laptop-mode-info-dialog" popovertargetaction="hide">
             Close
           </button>
         </dialog>
+      </div>
+      <div class="input-container">
+        <label for="rate">Laptop mode threshold</label>
+        <input id="threshold" class="input" type="text" />
       </div>
     </div>
   </div>

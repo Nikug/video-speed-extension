@@ -43,6 +43,10 @@ body {
   background-color: #7f1d1d66;
 }
 
+.input[disabled] {
+  opacity: 0.5;
+}
+
 .checkbox-container {
   display: flex;
   align-items: center;
@@ -78,4 +82,9 @@ body {
 
 .small-text {
   font-size: 0.85rem;
+}
+
+.divider {
+  width: 100%;
+  border-color: #475569;
 }

@@ -5,11 +5,12 @@ let rateElement = null;
 let timeout = null;
 const hideRateElementDelay = 500;
 
-let originalPlaybackRate = 1;
+// Laptop mode variables
+let originalPlaybackRate = null;
 let scrolledDistance = 0;
 let clearDistanceTimeout = null;
 const clearDistanceDelay = 500;
-const distanceThreshold = 15;
+let distanceThreshold = 20;
 
 const setup = async () => {
   const storedRate = await browser.storage.local.get("rate");
@@ -17,6 +18,26 @@ const setup = async () => {
 
   const storedLaptopMode = await browser.storage.local.get("laptopMode");
   laptopMode = storedLaptopMode?.laptopMode ?? false;
+
+  const storedThreshold = await browser.storage.local.get("threshold");
+  distanceThreshold = storedThreshold?.threshold ?? 20;
+
+  document.addEventListener("wheel", handleWheel, {
+    passive: false,
+    capture: true,
+  });
+
+  browser.storage.onChanged.addListener((changes) => {
+    if (changes.rate != null) {
+      rateStep = changes.rate.newValue;
+    }
+    if (changes.laptopMode != null) {
+      laptopMode = changes.laptopMode.newValue;
+    }
+    if (changes.threshold != null) {
+      distanceThreshold = changes.threshold.newValue;
+    }
+  });
 };
 
 const showCurrentRate = () => {
@@ -73,13 +94,14 @@ const handleWheel = async (event) => {
     event.preventDefault();
 
     if (laptopMode) {
+      originalPlaybackRate ??= videoElement.playbackRate;
       scrolledDistance += event.deltaY;
 
       if (clearDistanceTimeout) clearTimeout(clearDistanceTimeout);
       clearDistanceTimeout = setTimeout(() => {
         scrolledDistance = 0;
         clearDistanceTimeout = null;
-        originalPlaybackRate = videoElement.playbackRate;
+        originalPlaybackRate = null;
       }, clearDistanceDelay);
 
       const steps = Math.round(scrolledDistance / distanceThreshold);
@@ -97,19 +119,5 @@ const handleWheel = async (event) => {
     showCurrentRate();
   }
 };
-
-document.addEventListener("wheel", handleWheel, {
-  passive: false,
-  capture: true,
-});
-
-browser.storage.onChanged.addListener((changes) => {
-  if (changes.rate != null) {
-    rateStep = changes.rate.newValue;
-  }
-  if (changes.laptopMode != null) {
-    laptopMode = changes.laptopMode.newValue;
-  }
-});
 
 setup();
