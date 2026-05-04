@@ -22,11 +22,6 @@ const setup = async () => {
   const storedThreshold = await browser.storage.local.get("threshold");
   distanceThreshold = storedThreshold?.threshold ?? 20;
 
-  document.addEventListener("wheel", handleWheel, {
-    passive: false,
-    capture: true,
-  });
-
   browser.storage.onChanged.addListener((changes) => {
     if (changes.rate != null) {
       rateStep = changes.rate.newValue;
@@ -37,6 +32,11 @@ const setup = async () => {
     if (changes.threshold != null) {
       distanceThreshold = changes.threshold.newValue;
     }
+  });
+
+  document.addEventListener("wheel", handleWheel, {
+    passive: false,
+    capture: true,
   });
 };
 
