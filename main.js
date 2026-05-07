@@ -12,6 +12,8 @@ let clearDistanceTimeout = null;
 const clearDistanceDelay = 500;
 let distanceThreshold = 20;
 
+const videoElements = new WeakSet();
+
 const setup = async () => {
   const storedRate = await browser.storage.local.get("rate");
   rateStep = storedRate?.rate ?? 0.1;
@@ -34,10 +36,41 @@ const setup = async () => {
     }
   });
 
-  document.addEventListener("wheel", handleWheel, {
+  // Initialize with existing video elements
+  document.querySelectorAll("video").forEach(addWheelListener);
+
+  // Observe for new video elements
+  const observer = new MutationObserver(handleMutations);
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+};
+
+const addWheelListener = (videoElement) => {
+  if (videoElements.has(videoElement)) return;
+  videoElements.add(videoElement);
+  videoElement.addEventListener("wheel", handleWheel, {
     passive: false,
     capture: true,
   });
+};
+
+const handleMutations = (mutations) => {
+  for (const mutation of mutations) {
+    for (const node of mutation.addedNodes) {
+      if (!node || node.nodeType !== Node.ELEMENT_NODE) {
+        continue;
+      } else if (node.tagName === "VIDEO") {
+        addWheelListener(node);
+      } else {
+        const videos = node.getElementsByTagName("video");
+        for (const video of videos) {
+          addWheelListener(video);
+        }
+      }
+    }
+  }
 };
 
 const showCurrentRate = () => {
@@ -81,43 +114,34 @@ const quantize = (value, amount) => {
 
 const handleWheel = async (event) => {
   if (!event.ctrlKey) return;
+  if (event.target.tagName !== "VIDEO") return;
+  videoElement = event.target;
 
-  if (event.target.localName === "video") {
-    videoElement = event.target;
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (laptopMode) {
+    originalPlaybackRate ??= videoElement.playbackRate;
+    scrolledDistance += event.deltaY;
+
+    if (clearDistanceTimeout) clearTimeout(clearDistanceTimeout);
+    clearDistanceTimeout = setTimeout(() => {
+      scrolledDistance = 0;
+      clearDistanceTimeout = null;
+      originalPlaybackRate = null;
+    }, clearDistanceDelay);
+
+    const steps = Math.round(scrolledDistance / distanceThreshold);
+    const newRate = quantize(originalPlaybackRate - steps * rateStep, rateStep);
+    videoElement.playbackRate = newRate >= 0 ? newRate : 0;
   } else {
-    videoElement = document
-      .elementsFromPoint(event.clientX, event.clientY)
-      .find((element) => element.localName === "video");
+    const newSpeed =
+      videoElement.playbackRate - Math.sign(event.deltaY) * rateStep;
+    const newRate = quantize(newSpeed, rateStep);
+    videoElement.playbackRate = newRate >= 0 ? newRate : 0;
   }
 
-  if (videoElement) {
-    event.preventDefault();
-
-    if (laptopMode) {
-      originalPlaybackRate ??= videoElement.playbackRate;
-      scrolledDistance += event.deltaY;
-
-      if (clearDistanceTimeout) clearTimeout(clearDistanceTimeout);
-      clearDistanceTimeout = setTimeout(() => {
-        scrolledDistance = 0;
-        clearDistanceTimeout = null;
-        originalPlaybackRate = null;
-      }, clearDistanceDelay);
-
-      const steps = Math.round(scrolledDistance / distanceThreshold);
-      const newRate = quantize(
-        originalPlaybackRate - steps * rateStep,
-        rateStep,
-      );
-      videoElement.playbackRate = newRate >= 0 ? newRate : 0;
-    } else {
-      const newSpeed =
-        videoElement.playbackRate - Math.sign(event.deltaY) * rateStep;
-      const newRate = quantize(newSpeed, rateStep);
-      videoElement.playbackRate = newRate >= 0 ? newRate : 0;
-    }
-    showCurrentRate();
-  }
+  showCurrentRate();
 };
 
 setup();
