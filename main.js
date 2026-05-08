@@ -47,15 +47,6 @@ const setup = async () => {
   });
 };
 
-const addWheelListener = (videoElement) => {
-  if (videoElements.has(videoElement)) return;
-  videoElements.add(videoElement);
-  videoElement.addEventListener("wheel", handleWheel, {
-    passive: false,
-    capture: true,
-  });
-};
-
 const handleMutations = (mutations) => {
   for (const mutation of mutations) {
     for (const node of mutation.addedNodes) {
@@ -71,6 +62,15 @@ const handleMutations = (mutations) => {
       }
     }
   }
+};
+
+const addWheelListener = (videoElement) => {
+  if (videoElements.has(videoElement)) return;
+  videoElements.add(videoElement);
+  videoElement.addEventListener("wheel", handleWheel, {
+    passive: false,
+    capture: true,
+  });
 };
 
 const showCurrentRate = () => {
